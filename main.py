@@ -1,7 +1,7 @@
 import logging
 from __init__ import create_app
-from flask import render_template, jsonify
-from flask_login import login_required
+from flask import render_template, jsonify, redirect, url_for
+from flask_login import login_required, current_user
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -17,8 +17,8 @@ def home():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    logger.debug("Accessing dashboard route from main.py")
-    return render_template('dashboard.html')
+    logger.debug(f"Accessing dashboard route from main.py for user {current_user.id}")
+    return redirect(url_for('expense.dashboard'))
 
 @app.errorhandler(404)
 def not_found_error(error):

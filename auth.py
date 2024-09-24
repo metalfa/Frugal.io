@@ -64,8 +64,4 @@ def logout():
     logout_user()
     return redirect(url_for('auth.login'))
 
-@auth_bp.route("/dashboard")
-@login_required
-def dashboard():
-    logger.debug(f"User {current_user.id} accessing dashboard through auth blueprint")
-    return redirect(url_for('expense.dashboard'))
+# Removed the dashboard route from auth blueprint
