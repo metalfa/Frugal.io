@@ -37,13 +37,18 @@ def login():
         return redirect(url_for('expense.dashboard'))
     form = LoginForm()
     if form.validate_on_submit():
-        logger.debug(f"Login attempt for user: {form.email.data}")
+        logger.debug(f"Login form submitted for user: {form.email.data}")
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             logger.info(f"User {user.id} logged in successfully")
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('expense.dashboard'))
+            logger.debug(f"Next page after login: {next_page}")
+            if next_page:
+                return redirect(next_page)
+            else:
+                logger.debug("Redirecting to expense.dashboard after successful login")
+                return redirect(url_for('expense.dashboard'))
         else:
             logger.warning(f"Failed login attempt for user: {form.email.data}")
             flash('Login Unsuccessful. Please check email and password', 'danger')

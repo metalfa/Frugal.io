@@ -11,7 +11,6 @@ from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 
-# Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ expense_bp = Blueprint('expense', __name__)
 @expense_bp.route("/dashboard")
 @login_required
 def dashboard():
-    logger.debug(f"User {current_user.id} accessing dashboard")
+    logger.debug(f"User {current_user.id} accessing dashboard in expense_analyzer.py")
     try:
         expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date.desc()).all()
         logger.debug(f"Retrieved {len(expenses)} expenses for user {current_user.id}")
