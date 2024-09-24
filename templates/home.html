@@ -5,10 +5,12 @@
     <h1>Welcome to Spendless</h1>
     <p>Spendless is an AI-driven expense management platform to help you optimize your spending through data analysis and alternative product suggestions.</p>
     {% if current_user.is_authenticated %}
-        <a href="{{ url_for('expense.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+        <a href="{{ url_for('expense.dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <p class="mt-3">Ready to test our new Bargaining Team feature? Upload a shopping cart screenshot on your dashboard!</p>
     {% else %}
-        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-lg">Register</a>
+        <p class="mt-3">Log in or register to start optimizing your expenses and test our new Bargaining Team feature!</p>
     {% endif %}
 </div>
 {% endblock %}

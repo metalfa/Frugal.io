@@ -45,11 +45,7 @@ def login():
                 logger.info(f"User {user.id} logged in successfully")
                 next_page = request.args.get('next')
                 logger.debug(f"Next page after login: {next_page}")
-                if next_page:
-                    return redirect(next_page)
-                else:
-                    logger.debug("Redirecting to expense.dashboard after successful login")
-                    return redirect(url_for('expense.dashboard'))
+                return redirect(next_page) if next_page else redirect(url_for('expense.dashboard'))
             else:
                 logger.warning(f"Failed login attempt for user: {form.email.data}")
                 flash('Login Unsuccessful. Please check email and password', 'danger')
@@ -63,5 +59,3 @@ def logout():
     logger.debug(f"User {current_user.id} logging out")
     logout_user()
     return redirect(url_for('auth.login'))
-
-# Removed the dashboard route from auth blueprint
