@@ -24,6 +24,7 @@ def analyze_shopping_cart(image_path):
         # Process the extracted text to identify items and prices
         items = extract_items(text)
         
+        logger.debug(f"Extracted items: {items}")
         return items
     except Exception as e:
         logger.error(f"Error analyzing shopping cart: {str(e)}")
@@ -45,8 +46,11 @@ def extract_items(text):
         if match:
             item_name = match.group(1).strip()
             price = float(match.group(2))
-            items.append({"name": item_name, "price": price})
-            logger.debug(f"Matched item: {item_name}, price: ${price:.2f}")
+            
+            # Skip the subtotal line
+            if "subtotal" not in item_name.lower():
+                items.append({"name": item_name, "price": price})
+                logger.debug(f"Matched item: {item_name}, price: ${price:.2f}")
         else:
             logger.debug(f"No match found for line: {line}")
     

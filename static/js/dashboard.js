@@ -167,7 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initial updates
     updateAnalysis();
     updateSuggestions();
 });
