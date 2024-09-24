@@ -3,10 +3,9 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    padding-bottom: 60px; /* Add padding at the bottom */
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
@@ -31,8 +30,42 @@ nav ul li a {
 }
 
 main {
+    flex-grow: 1;
+    display: flex;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-grow: 1;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #f4f4f4;
+    padding: 1rem;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.main-content {
+    flex-grow: 1;
     padding: 2rem;
-    flex-grow: 1; /* Allow main content to grow and push footer down */
+}
+
+.section {
+    margin-bottom: 2rem;
 }
 
 .alert {
@@ -74,11 +107,6 @@ main {
     border-radius: 4px;
 }
 
-.dashboard-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
 .expense-form, .receipt-upload, .expense-list, .analysis, .suggestions {
     margin-bottom: 2rem;
     background-color: #f9f9f9;
@@ -96,23 +124,22 @@ main {
     padding: 0.5rem 0;
 }
 
-#receipt-form {
+#receipt-form, #shopping-cart-form {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-#receipt-form input[type="file"] {
+#receipt-form input[type="file"], #shopping-cart-form input[type="file"] {
     margin-bottom: 1rem;
 }
 
 footer {
-    position: relative;
-    width: 100%;
-    padding: 1rem;
     background-color: #333;
     color: #fff;
     text-align: center;
+    padding: 1rem;
+    margin-top: auto;
 }
 
 button {

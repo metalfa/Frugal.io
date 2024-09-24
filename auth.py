@@ -35,6 +35,15 @@ def login():
     if current_user.is_authenticated:
         logger.debug(f"User {current_user.id} already authenticated, redirecting to dashboard")
         return redirect(url_for('expense.dashboard'))
+    
+    # Automatically log in the test user
+    test_user = User.query.filter_by(email='test@example.com').first()
+    if test_user:
+        login_user(test_user)
+        logger.info(f"Test user {test_user.id} logged in automatically")
+        next_page = request.args.get('next')
+        return redirect(next_page) if next_page else redirect(url_for('expense.dashboard'))
+    
     form = LoginForm()
     if form.validate_on_submit():
         logger.debug(f"Login form submitted for user: {form.email.data}")

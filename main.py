@@ -1,5 +1,5 @@
 import logging
-from __init__ import create_app
+from __init__ import create_app, db
 from flask import render_template, jsonify, redirect, url_for, request
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -7,8 +7,8 @@ import os
 from receipt_scanner import scan_receipt
 from shopping_cart_analyzer import analyze_shopping_cart, suggest_alternatives
 from bargaining_team import negotiate_shopping_cart
+from models import Expense
 
-# Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,8 @@ def home():
 @login_required
 def dashboard():
     logger.debug(f"Accessing dashboard route from main.py for user {current_user.id}")
-    return redirect(url_for('expense.dashboard'))
+    expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date.desc()).all()
+    return render_template('dashboard.html', expenses=expenses)
 
 @app.route('/mobile')
 @login_required

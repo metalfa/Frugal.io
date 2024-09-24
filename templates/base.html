@@ -28,6 +28,9 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        {% if not current_user.is_authenticated %}
+            <div class="alert alert-info">Please log in to access this page</div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
     <footer>

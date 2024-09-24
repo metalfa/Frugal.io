@@ -2,60 +2,73 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 <div class="dashboard-container">
-    <h1>Welcome, {{ current_user.username }}!</h1>
-    <div class="expense-form">
-        <h2>Add New Expense</h2>
-        <form id="expense-form">
-            <input type="number" id="amount" placeholder="Amount" required>
-            <input type="text" id="category" placeholder="Category" required>
-            <input type="text" id="description" placeholder="Description">
-            <button type="submit">Add Expense</button>
-        </form>
-    </div>
-    <div class="receipt-upload">
-        <h2>Upload Receipt</h2>
-        <form id="receipt-form" enctype="multipart/form-data">
-            <input type="file" id="receipt" name="receipt" accept="image/*" required>
-            <button type="submit">Upload Receipt</button>
-        </form>
-    </div>
-    <div class="shopping-cart-upload">
-        <h2>Upload Shopping Cart Screenshot</h2>
-        <form id="shopping-cart-form" enctype="multipart/form-data">
-            <input type="file" id="shopping-cart" name="shopping_cart" accept="image/*" required>
-            <button type="submit">Analyze Shopping Cart</button>
-        </form>
-    </div>
-    <div class="expense-list">
-        <h2>Recent Expenses</h2>
-        <ul id="expenses">
-            {% for expense in expenses %}
-            <li>
-                <span class="amount">${{ expense.amount }}</span>
-                <span class="category">{{ expense.category }}</span>
-                <span class="description">{{ expense.description }}</span>
-                <span class="date">{{ expense.date.strftime('%Y-%m-%d') }}</span>
-            </li>
-            {% endfor %}
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="#expenses">Expenses</a></li>
+            <li><a href="#analysis">Analysis</a></li>
+            <li><a href="#suggestions">Suggestions</a></li>
         </ul>
     </div>
-    <div class="analysis">
-        <h2>Expense Analysis</h2>
-        <div id="total-spent"></div>
-        <div id="category-breakdown"></div>
-    </div>
-    <div class="suggestions">
-        <h2>Suggestions</h2>
-        <ul id="product-suggestions"></ul>
-    </div>
-    <div class="shopping-cart-analysis">
-        <h2>Shopping Cart Analysis</h2>
-        <div id="shopping-cart-items"></div>
-        <div id="shopping-cart-suggestions"></div>
-    </div>
-    <div class="negotiation-results">
-        <h2>Bargaining Team Results</h2>
-        <div id="negotiation-results"></div>
+    <div class="main-content">
+        <h1>Welcome, {{ current_user.username }}!</h1>
+        <div id="expenses" class="section">
+            <h2>Expenses</h2>
+            <div class="expense-form">
+                <h3>Add New Expense</h3>
+                <form id="expense-form">
+                    <input type="number" id="amount" placeholder="Amount" required>
+                    <input type="text" id="category" placeholder="Category" required>
+                    <input type="text" id="description" placeholder="Description">
+                    <button type="submit">Add Expense</button>
+                </form>
+            </div>
+            <div class="receipt-upload">
+                <h3>Upload Receipt</h3>
+                <form id="receipt-form" enctype="multipart/form-data">
+                    <input type="file" id="receipt" name="receipt" accept="image/*" required>
+                    <button type="submit">Upload Receipt</button>
+                </form>
+            </div>
+            <div class="shopping-cart-upload">
+                <h3>Upload Shopping Cart Screenshot</h3>
+                <form id="shopping-cart-form" enctype="multipart/form-data">
+                    <input type="file" id="shopping-cart" name="shopping_cart" accept="image/*" required>
+                    <button type="submit">Analyze Shopping Cart</button>
+                </form>
+            </div>
+            <div class="expense-list">
+                <h3>Recent Expenses</h3>
+                <ul id="expenses">
+                    {% for expense in expenses %}
+                    <li>
+                        <span class="amount">${{ expense.amount }}</span>
+                        <span class="category">{{ expense.category }}</span>
+                        <span class="description">{{ expense.description }}</span>
+                        <span class="date">{{ expense.date.strftime('%Y-%m-%d') }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div id="analysis" class="section">
+            <h2>Expense Analysis</h2>
+            <div id="total-spent"></div>
+            <div id="category-breakdown"></div>
+        </div>
+        <div id="suggestions" class="section">
+            <h2>Suggestions</h2>
+            <ul id="product-suggestions"></ul>
+        </div>
+        <div class="shopping-cart-analysis">
+            <h2>Shopping Cart Analysis</h2>
+            <div id="shopping-cart-items"></div>
+            <div id="shopping-cart-suggestions"></div>
+        </div>
+        <div class="negotiation-results">
+            <h2>Bargaining Team Results</h2>
+            <div id="negotiation-results"></div>
+        </div>
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
