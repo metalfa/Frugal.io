@@ -7,6 +7,7 @@ from price_comparison import compare_prices
 from product_suggestions import get_suggestions
 from receipt_scanner import scan_receipt
 from shopping_cart_analyzer import analyze_shopping_cart, suggest_alternatives
+from bargaining_team import negotiate_shopping_cart
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
@@ -170,6 +171,7 @@ def upload_shopping_cart():
                 return jsonify({"success": False, "message": "Failed to analyze shopping cart"}), 500
             
             suggestions = suggest_alternatives(items)
+            negotiation_results = negotiate_shopping_cart(items)
             
             os.remove(file_path)
             logger.debug(f"Temporary file removed: {file_path}")
@@ -179,10 +181,32 @@ def upload_shopping_cart():
                 "success": True,
                 "message": "Shopping cart analyzed successfully",
                 "items": items,
-                "suggestions": suggestions
+                "suggestions": suggestions,
+                "negotiation_results": negotiation_results
             })
         except Exception as e:
             logger.error(f"Error analyzing shopping cart: {str(e)}")
             return jsonify({"success": False, "message": f"Error analyzing shopping cart: {str(e)}"}), 500
     
     return jsonify({"success": False, "message": "Failed to analyze shopping cart"}), 500
+
+@expense_bp.route("/negotiate_prices", methods=['POST'])
+@login_required
+def negotiate_prices():
+    logger.debug(f"User {current_user.id} requesting price negotiation")
+    data = request.json
+    try:
+        items = data.get('items', [])
+        if not items:
+            return jsonify({"success": False, "message": "No items provided for negotiation"}), 400
+
+        negotiation_results = negotiate_shopping_cart(items)
+        logger.debug(f"Negotiation results for user {current_user.id}: {negotiation_results}")
+        return jsonify({
+            "success": True,
+            "message": "Price negotiation completed",
+            "negotiation_results": negotiation_results
+        })
+    except Exception as e:
+        logger.error(f"Error negotiating prices: {str(e)}")
+        return jsonify({"success": False, "message": f"Error negotiating prices: {str(e)}"}), 500

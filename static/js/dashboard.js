@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const productSuggestionsElement = document.getElementById('product-suggestions');
     const shoppingCartItemsElement = document.getElementById('shopping-cart-items');
     const shoppingCartSuggestionsElement = document.getElementById('shopping-cart-suggestions');
+    const negotiationResultsElement = document.getElementById('negotiation-results');
 
     expenseForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -73,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Shopping cart analyzed successfully');
                 shoppingCartForm.reset();
                 displayShoppingCartAnalysis(data.items, data.suggestions);
+                displayNegotiationResults(data.negotiation_results);
             } else {
                 console.error('Error analyzing shopping cart:', data.message);
                 alert('Error analyzing shopping cart: ' + data.message);
@@ -173,6 +175,40 @@ document.addEventListener('DOMContentLoaded', function() {
             shoppingCartSuggestionsElement.innerHTML = suggestionsHtml;
         } else {
             console.error('shoppingCartSuggestionsElement not found');
+        }
+    }
+
+    function displayNegotiationResults(results) {
+        console.log('Negotiation results:', results);
+
+        let negotiationHtml = '<h3>Bargaining Team Results:</h3><ul>';
+        if (results && results.length > 0) {
+            results.forEach(result => {
+                if (result.success) {
+                    negotiationHtml += `<li>
+                        <strong>${result.item}</strong>
+                        <br>Negotiator: ${result.negotiator}
+                        <br>Original Price: $${result.original_price.toFixed(2)}
+                        <br>New Price: $${result.new_price.toFixed(2)}
+                        <br>Savings: $${result.savings.toFixed(2)}
+                    </li>`;
+                } else {
+                    negotiationHtml += `<li>
+                        <strong>${result.item}</strong>
+                        <br>Negotiator: ${result.negotiator}
+                        <br>Negotiation unsuccessful
+                    </li>`;
+                }
+            });
+        } else {
+            negotiationHtml += '<li>No negotiation results available.</li>';
+        }
+        negotiationHtml += '</ul>';
+
+        if (negotiationResultsElement) {
+            negotiationResultsElement.innerHTML = negotiationHtml;
+        } else {
+            console.error('negotiationResultsElement not found');
         }
     }
 

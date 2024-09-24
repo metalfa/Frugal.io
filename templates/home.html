@@ -4,7 +4,11 @@
 <div class="container">
     <h1>Welcome to Spendless</h1>
     <p>Spendless is an AI-driven expense management platform to help you optimize your spending through data analysis and alternative product suggestions.</p>
-    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
-    <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('expense.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+    {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+    {% endif %}
 </div>
 {% endblock %}
