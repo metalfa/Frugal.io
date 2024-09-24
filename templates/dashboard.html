@@ -12,7 +12,7 @@
     </div>
     <div class="main-content">
         <h1>Welcome, {{ current_user.username }}!</h1>
-        <div id="expenses" class="section">
+        <div id="expenses-section" class="feature-section">
             <h2>Expenses</h2>
             <div class="expense-form">
                 <h3>Add New Expense</h3>
@@ -51,21 +51,21 @@
                 </ul>
             </div>
         </div>
-        <div id="analysis" class="section">
+        <div id="analysis-section" class="feature-section hidden">
             <h2>Expense Analysis</h2>
             <div id="total-spent"></div>
             <div id="category-breakdown"></div>
         </div>
-        <div id="suggestions" class="section">
+        <div id="suggestions-section" class="feature-section hidden">
             <h2>Suggestions</h2>
             <ul id="product-suggestions"></ul>
         </div>
-        <div class="shopping-cart-analysis">
+        <div id="shopping-cart-section" class="feature-section hidden">
             <h2>Shopping Cart Analysis</h2>
             <div id="shopping-cart-items"></div>
             <div id="shopping-cart-suggestions"></div>
         </div>
-        <div class="negotiation-results">
+        <div id="bargaining-section" class="feature-section hidden">
             <h2>Bargaining Team Results</h2>
             <div id="negotiation-results"></div>
         </div>

@@ -10,6 +10,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const shoppingCartSuggestionsElement = document.getElementById('shopping-cart-suggestions');
     const negotiationResultsElement = document.getElementById('negotiation-results');
 
+    function showFeature(featureId) {
+        document.querySelectorAll('.feature-section').forEach(section => {
+            section.classList.add('hidden');
+        });
+        document.getElementById(featureId + '-section').classList.remove('hidden');
+    }
+
+    // Add event listeners to sidebar menu items
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const featureId = this.getAttribute('href').substring(1);
+            showFeature(featureId);
+        });
+    });
+
     expenseForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const amount = document.getElementById('amount').value;
@@ -75,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 shoppingCartForm.reset();
                 displayShoppingCartAnalysis(data.items, data.suggestions);
                 displayNegotiationResults(data.negotiation_results);
+                showFeature('shopping-cart');
             } else {
                 console.error('Error analyzing shopping cart:', data.message);
                 alert('Error analyzing shopping cart: ' + data.message);
@@ -214,4 +231,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateAnalysis();
     updateSuggestions();
+    showFeature('expenses'); // Show expenses section by default
 });

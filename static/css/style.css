@@ -64,8 +64,12 @@ main {
     padding: 2rem;
 }
 
-.section {
+.feature-section {
     margin-bottom: 2rem;
+}
+
+.hidden {
+    display: none;
 }
 
 .alert {
