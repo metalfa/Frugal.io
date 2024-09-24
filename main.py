@@ -1,6 +1,7 @@
 from __init__ import create_app
 from flask import render_template
 from flask_login import login_required
+from email_validator import validate_email, EmailNotValidError
 
 app = create_app()
 
