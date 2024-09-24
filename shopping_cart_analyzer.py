@@ -4,6 +4,7 @@ import pytesseract
 import re
 from flask import current_app
 import logging
+import random
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -34,27 +35,76 @@ def extract_items(text):
     
     items = []
     for line in lines:
+        # Skip empty lines
+        if not line.strip():
+            logger.debug(f"Skipping empty line")
+            continue
+        
         # Use regex to find item name and price
-        match = re.search(r'(.*?)\s*\$?(\d+\.\d{2})', line)
+        match = re.search(r'(.+?)\s+\$?(\d+\.\d{2})', line)
         if match:
             item_name = match.group(1).strip()
             price = float(match.group(2))
             items.append({"name": item_name, "price": price})
+            logger.debug(f"Matched item: {item_name}, price: ${price:.2f}")
+        else:
+            logger.debug(f"No match found for line: {line}")
     
     logger.debug(f"Extracted items: {items}")
     return items
 
+# Small database of alternative products
+alternative_products = {
+    "Milk": [
+        {"name": "Organic Milk", "price": 4.99},
+        {"name": "Soy Milk", "price": 3.99},
+        {"name": "Almond Milk", "price": 3.49},
+    ],
+    "Bread": [
+        {"name": "Whole Grain Bread", "price": 3.99},
+        {"name": "Gluten-Free Bread", "price": 5.99},
+        {"name": "Sourdough Bread", "price": 4.49},
+    ],
+    "Eggs": [
+        {"name": "Free-Range Eggs", "price": 5.99},
+        {"name": "Organic Eggs", "price": 6.49},
+        {"name": "Quail Eggs", "price": 7.99},
+    ],
+    "Default": [
+        {"name": "Generic Alternative 1", "price": 0},
+        {"name": "Generic Alternative 2", "price": 0},
+        {"name": "Generic Alternative 3", "price": 0},
+    ]
+}
+
 def suggest_alternatives(items):
-    # This is a placeholder function. In a real-world scenario, you would
-    # integrate with a price comparison API or database to suggest alternatives.
     suggestions = []
     for item in items:
+        original_name = item["name"]
+        original_price = item["price"]
+        
+        # Find matching category or use default
+        category = next((cat for cat in alternative_products.keys() if cat.lower() in original_name.lower()), "Default")
+        alternatives = alternative_products[category]
+        
+        # Select a random alternative
+        alternative = random.choice(alternatives)
+        alternative_name = alternative["name"]
+        
+        # If using default category, adjust the price
+        if category == "Default":
+            alternative_price = round(original_price * random.uniform(0.8, 0.95), 2)
+        else:
+            alternative_price = alternative["price"]
+        
         suggestion = {
-            "original_item": item["name"],
-            "original_price": item["price"],
-            "alternative_item": f"Alternative {item['name']}",
-            "alternative_price": round(item["price"] * 0.9, 2)  # 10% cheaper as an example
+            "original_item": original_name,
+            "original_price": original_price,
+            "alternative_item": alternative_name,
+            "alternative_price": alternative_price
         }
         suggestions.append(suggestion)
-    logger.debug(f"Generated suggestions: {suggestions}")
+        logger.debug(f"Generated suggestion: {suggestion}")
+    
+    logger.debug(f"All generated suggestions: {suggestions}")
     return suggestions
