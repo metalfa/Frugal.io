@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log('Shopping cart analysis response:', data);
             if (data.success) {
                 alert('Shopping cart analyzed successfully');
                 shoppingCartForm.reset();
@@ -118,31 +119,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayShoppingCartAnalysis(items, suggestions) {
-        let itemsHtml = '<h3>Shopping Cart Items:</h3><ul>';
-        items.forEach(item => {
-            if (item.name && item.price !== undefined) {
-                itemsHtml += `<li>${item.name}: $${item.price.toFixed(2)}</li>`;
-            } else {
-                console.warn('Skipping invalid item:', item);
-            }
-        });
-        itemsHtml += '</ul>';
-        shoppingCartItemsElement.innerHTML = itemsHtml;
+        console.log('Items:', items);
+        console.log('Suggestions:', suggestions);
 
+        let itemsHtml = '<h3>Shopping Cart Items:</h3><ul>';
+        if (items && items.length > 0) {
+            items.forEach(item => {
+                if (item && item.name && item.price !== undefined) {
+                    itemsHtml += `<li>${item.name}: $${item.price.toFixed(2)}</li>`;
+                } else {
+                    console.warn('Invalid item:', item);
+                }
+            });
+        } else {
+            itemsHtml += '<li>No items found in the shopping cart.</li>';
+        }
+        itemsHtml += '</ul>';
+        
         let suggestionsHtml = '<h3>Alternative Suggestions:</h3><ul>';
-        suggestions.forEach(suggestion => {
-            if (suggestion.original_item && suggestion.alternative_item) {
-                suggestionsHtml += `<li>
-                    <strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})
-                    <br>Alternative: ${suggestion.alternative_item} ($${suggestion.alternative_price.toFixed(2)})
-                    <br>Potential Savings: $${(suggestion.original_price - suggestion.alternative_price).toFixed(2)}
-                </li>`;
-            } else {
-                console.warn('Skipping invalid suggestion:', suggestion);
-            }
-        });
+        if (suggestions && suggestions.length > 0) {
+            suggestions.forEach(suggestion => {
+                if (suggestion && suggestion.original_item && suggestion.alternative_item) {
+                    suggestionsHtml += `<li>
+                        <strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})
+                        <br>Alternative: ${suggestion.alternative_item} ($${suggestion.alternative_price.toFixed(2)})
+                        <br>Potential Savings: $${(suggestion.original_price - suggestion.alternative_price).toFixed(2)}
+                    </li>`;
+                } else {
+                    console.warn('Invalid suggestion:', suggestion);
+                }
+            });
+        } else {
+            suggestionsHtml += '<li>No alternative suggestions available.</li>';
+        }
         suggestionsHtml += '</ul>';
-        shoppingCartSuggestionsElement.innerHTML = suggestionsHtml;
+
+        if (shoppingCartItemsElement) {
+            shoppingCartItemsElement.innerHTML = itemsHtml;
+        } else {
+            console.error('shoppingCartItemsElement not found');
+        }
+
+        if (shoppingCartSuggestionsElement) {
+            shoppingCartSuggestionsElement.innerHTML = suggestionsHtml;
+        } else {
+            console.error('shoppingCartSuggestionsElement not found');
+        }
     }
 
     // Initial updates

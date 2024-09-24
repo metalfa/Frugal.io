@@ -39,3 +39,8 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+@auth_bp.route("/dashboard")
+@login_required
+def dashboard():
+    return redirect(url_for('expense.dashboard'))
