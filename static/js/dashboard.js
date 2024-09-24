@@ -74,8 +74,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 shoppingCartForm.reset();
                 displayShoppingCartAnalysis(data.items, data.suggestions);
             } else {
+                console.error('Error analyzing shopping cart:', data.message);
                 alert('Error analyzing shopping cart: ' + data.message);
             }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
         });
     });
 
@@ -125,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let itemsHtml = '<h3>Shopping Cart Items:</h3><ul>';
         if (items && items.length > 0) {
             items.forEach(item => {
+                console.log('Processing item:', item);
                 if (item && item.name && item.price !== undefined) {
                     itemsHtml += `<li>${item.name}: $${item.price.toFixed(2)}</li>`;
                 } else {
@@ -132,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         } else {
+            console.warn('No items found in the shopping cart');
             itemsHtml += '<li>No items found in the shopping cart.</li>';
         }
         itemsHtml += '</ul>';
@@ -139,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let suggestionsHtml = '<h3>Alternative Suggestions:</h3><ul>';
         if (suggestions && suggestions.length > 0) {
             suggestions.forEach(suggestion => {
+                console.log('Processing suggestion:', suggestion);
                 if (suggestion && suggestion.original_item && suggestion.alternative_item) {
                     suggestionsHtml += `<li>
                         <strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})
@@ -150,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         } else {
+            console.warn('No alternative suggestions available');
             suggestionsHtml += '<li>No alternative suggestions available.</li>';
         }
         suggestionsHtml += '</ul>';
