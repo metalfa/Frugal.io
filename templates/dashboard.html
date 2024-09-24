@@ -12,6 +12,13 @@
             <button type="submit">Add Expense</button>
         </form>
     </div>
+    <div class="receipt-upload">
+        <h2>Upload Receipt</h2>
+        <form id="receipt-form" enctype="multipart/form-data">
+            <input type="file" id="receipt" name="receipt" accept="image/*" required>
+            <button type="submit">Upload Receipt</button>
+        </form>
+    </div>
     <div class="expense-list">
         <h2>Recent Expenses</h2>
         <ul id="expenses">

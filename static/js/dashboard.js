@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const expenseForm = document.getElementById('expense-form');
+    const receiptForm = document.getElementById('receipt-form');
     const expensesList = document.getElementById('expenses');
     const totalSpentElement = document.getElementById('total-spent');
     const categoryBreakdownElement = document.getElementById('category-breakdown');
@@ -28,6 +29,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateSuggestions();
             } else {
                 alert('Error adding expense');
+            }
+        });
+    });
+
+    receiptForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(receiptForm);
+
+        fetch('/upload_receipt', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Receipt processed successfully');
+                receiptForm.reset();
+                updateExpenses();
+                updateAnalysis();
+                updateSuggestions();
+            } else {
+                alert('Error processing receipt: ' + data.message);
             }
         });
     });

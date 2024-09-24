@@ -74,8 +74,11 @@ main {
     margin: 0 auto;
 }
 
-.expense-form, .expense-list, .analysis, .suggestions {
+.expense-form, .receipt-upload, .expense-list, .analysis, .suggestions {
     margin-bottom: 2rem;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 4px;
 }
 
 #expenses {
@@ -88,6 +91,16 @@ main {
     padding: 0.5rem 0;
 }
 
+#receipt-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#receipt-form input[type="file"] {
+    margin-bottom: 1rem;
+}
+
 footer {
     background-color: #333;
     color: #fff;
@@ -96,4 +109,17 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
