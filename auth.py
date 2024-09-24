@@ -38,20 +38,24 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         logger.debug(f"Login form submitted for user: {form.email.data}")
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            logger.info(f"User {user.id} logged in successfully")
-            next_page = request.args.get('next')
-            logger.debug(f"Next page after login: {next_page}")
-            if next_page:
-                return redirect(next_page)
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)
+                logger.info(f"User {user.id} logged in successfully")
+                next_page = request.args.get('next')
+                logger.debug(f"Next page after login: {next_page}")
+                if next_page:
+                    return redirect(next_page)
+                else:
+                    logger.debug("Redirecting to expense.dashboard after successful login")
+                    return redirect(url_for('expense.dashboard'))
             else:
-                logger.debug("Redirecting to expense.dashboard after successful login")
-                return redirect(url_for('expense.dashboard'))
-        else:
-            logger.warning(f"Failed login attempt for user: {form.email.data}")
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+                logger.warning(f"Failed login attempt for user: {form.email.data}")
+                flash('Login Unsuccessful. Please check email and password', 'danger')
+        except Exception as e:
+            logger.error(f"Error during login process: {str(e)}")
+            flash('An error occurred during login. Please try again.', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 @auth_bp.route("/logout")
