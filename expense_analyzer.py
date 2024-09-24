@@ -7,6 +7,7 @@ from product_suggestions import get_suggestions
 from receipt_scanner import scan_receipt
 from werkzeug.utils import secure_filename
 import os
+from datetime import datetime
 
 expense_bp = Blueprint('expense', __name__)
 
@@ -60,37 +61,43 @@ def upload_receipt():
         return jsonify({"success": False, "message": "No selected file"}), 400
     
     if file:
-        filename = secure_filename(file.filename)
-        upload_folder = os.path.join(current_app.root_path, 'uploads')
-        os.makedirs(upload_folder, exist_ok=True)
-        file_path = os.path.join(upload_folder, filename)
-        file.save(file_path)
-        
-        # Process the receipt
-        receipt_data = scan_receipt(file_path)
-        
-        # Create a new expense from the receipt data
-        new_expense = Expense(
-            amount=receipt_data['amount'],
-            category='Receipt Upload',
-            description=f"Merchant: {receipt_data['merchant']}",
-            date=receipt_data['date'],
-            user_id=current_user.id
-        )
-        db.session.add(new_expense)
-        db.session.commit()
-        
-        # Remove the uploaded file after processing
-        os.remove(file_path)
-        
-        return jsonify({
-            "success": True,
-            "message": "Receipt processed successfully",
-            "expense": {
-                "amount": receipt_data['amount'],
-                "date": receipt_data['date'],
-                "merchant": receipt_data['merchant']
-            }
-        })
+        try:
+            filename = secure_filename(file.filename)
+            upload_folder = os.path.join(current_app.root_path, 'uploads')
+            os.makedirs(upload_folder, exist_ok=True)
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+            
+            # Process the receipt
+            receipt_data = scan_receipt(file_path)
+            
+            if receipt_data is None:
+                return jsonify({"success": False, "message": "Failed to process receipt"}), 500
+            
+            # Create a new expense from the receipt data
+            new_expense = Expense(
+                amount=receipt_data['amount'] or 0,
+                category='Receipt Upload',
+                description=f"Merchant: {receipt_data['merchant'] or 'Unknown'}",
+                date=receipt_data['date'] or datetime.utcnow(),
+                user_id=current_user.id
+            )
+            db.session.add(new_expense)
+            db.session.commit()
+            
+            # Remove the uploaded file after processing
+            os.remove(file_path)
+            
+            return jsonify({
+                "success": True,
+                "message": "Receipt processed successfully",
+                "expense": {
+                    "amount": new_expense.amount,
+                    "date": new_expense.date.strftime('%Y-%m-%d'),
+                    "merchant": receipt_data['merchant'] or 'Unknown'
+                }
+            })
+        except Exception as e:
+            return jsonify({"success": False, "message": f"Error processing receipt: {str(e)}"}), 500
     
     return jsonify({"success": False, "message": "Failed to process receipt"}), 500
