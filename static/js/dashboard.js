@@ -120,18 +120,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayShoppingCartAnalysis(items, suggestions) {
         let itemsHtml = '<h3>Shopping Cart Items:</h3><ul>';
         items.forEach(item => {
-            itemsHtml += `<li>${item.name}: $${item.price.toFixed(2)}</li>`;
+            if (item.name && item.price !== undefined) {
+                itemsHtml += `<li>${item.name}: $${item.price.toFixed(2)}</li>`;
+            } else {
+                console.warn('Skipping invalid item:', item);
+            }
         });
         itemsHtml += '</ul>';
         shoppingCartItemsElement.innerHTML = itemsHtml;
 
         let suggestionsHtml = '<h3>Alternative Suggestions:</h3><ul>';
         suggestions.forEach(suggestion => {
-            suggestionsHtml += `<li>
-                <strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})
-                <br>Alternative: ${suggestion.alternative_item} ($${suggestion.alternative_price.toFixed(2)})
-                <br>Potential Savings: $${(suggestion.original_price - suggestion.alternative_price).toFixed(2)}
-            </li>`;
+            if (suggestion.original_item && suggestion.alternative_item) {
+                suggestionsHtml += `<li>
+                    <strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})
+                    <br>Alternative: ${suggestion.alternative_item} ($${suggestion.alternative_price.toFixed(2)})
+                    <br>Potential Savings: $${(suggestion.original_price - suggestion.alternative_price).toFixed(2)}
+                </li>`;
+            } else {
+                console.warn('Skipping invalid suggestion:', suggestion);
+            }
         });
         suggestionsHtml += '</ul>';
         shoppingCartSuggestionsElement.innerHTML = suggestionsHtml;
