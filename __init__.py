@@ -19,9 +19,11 @@ def create_app():
 
     from auth import auth_bp
     from expense_analyzer import expense_bp
+    from api import api_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(expense_bp)
+    app.register_blueprint(api_bp)
 
     with app.app_context():
         db.create_all()

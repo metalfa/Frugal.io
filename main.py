@@ -20,6 +20,12 @@ def dashboard():
     logger.debug(f"Accessing dashboard route from main.py for user {current_user.id}")
     return redirect(url_for('expense.dashboard'))
 
+@app.route('/mobile')
+@login_required
+def mobile():
+    logger.debug(f"Accessing mobile route for user {current_user.id}")
+    return render_template('mobile.html')
+
 @app.errorhandler(404)
 def not_found_error(error):
     logger.error(f"404 error: {error}")
