@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Fetch error:', error);
+            alert('An error occurred while analyzing the shopping cart. Please try again.');
         });
     });
 

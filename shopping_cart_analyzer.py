@@ -12,13 +12,26 @@ def analyze_shopping_cart(image_path):
     try:
         logger.debug(f"Analyzing shopping cart image: {image_path}")
 
+        # Check if the file exists
+        if not os.path.exists(image_path):
+            logger.error(f"Image file not found: {image_path}")
+            return None
+
         # Open the image using Pillow
-        image = Image.open(image_path)
+        try:
+            image = Image.open(image_path)
+        except Exception as e:
+            logger.error(f"Error opening image: {str(e)}")
+            return None
 
         # Use pytesseract to extract text from the image
         logger.debug("Extracting text from image using pytesseract")
-        text = pytesseract.image_to_string(image)
-        logger.debug(f"Extracted text from image:\n{text}")
+        try:
+            text = pytesseract.image_to_string(image)
+            logger.debug(f"Extracted text from image:\n{text}")
+        except Exception as e:
+            logger.error(f"Error extracting text from image: {str(e)}")
+            return None
 
         # Process the extracted text to identify items and prices
         items = extract_items(text)
@@ -55,8 +68,7 @@ def extract_items(text):
     return items
 
 def suggest_alternatives(items):
-    # Placeholder function for suggesting alternatives
-    # In a real implementation, this would use more sophisticated logic or external APIs
+    logger.debug("Generating alternative suggestions")
     suggestions = []
     for item in items:
         suggestion = {
@@ -66,4 +78,5 @@ def suggest_alternatives(items):
             "alternative_price": item["price"] * 0.9  # 10% cheaper alternative
         }
         suggestions.append(suggestion)
+        logger.debug(f"Generated suggestion: {suggestion}")
     return suggestions

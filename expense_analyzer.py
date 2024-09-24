@@ -161,6 +161,8 @@ def upload_shopping_cart():
             file_path = os.path.join(upload_folder, filename)
             file.save(file_path)
             
+            logger.debug(f"File saved successfully: {file_path}")
+            
             items = analyze_shopping_cart(file_path)
             
             if items is None or len(items) == 0:
@@ -170,6 +172,7 @@ def upload_shopping_cart():
             suggestions = suggest_alternatives(items)
             
             os.remove(file_path)
+            logger.debug(f"Temporary file removed: {file_path}")
             
             logger.debug(f"Shopping cart analyzed successfully for user {current_user.id}")
             return jsonify({
