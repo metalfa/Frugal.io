@@ -16,7 +16,7 @@
             margin: 0 auto;
             padding: 20px;
         }
-        h1 {
+        h1, h2 {
             text-align: center;
         }
         form {
@@ -24,6 +24,7 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
         input, select {
             width: 100%;
@@ -44,10 +45,10 @@
         button:hover {
             background-color: #0056b3;
         }
-        #expenseList {
+        #expenseList, #receiptResult, #shoppingCartResult, #bargainingResult {
             margin-top: 20px;
         }
-        .expense-item {
+        .item {
             background-color: white;
             padding: 10px;
             margin-bottom: 10px;
@@ -60,12 +61,29 @@
     <div class="container">
         <h1>Spendless Mobile</h1>
         <form id="expenseForm">
+            <h2>Add Expense</h2>
             <input type="number" id="amount" placeholder="Amount" required>
             <input type="text" id="category" placeholder="Category" required>
             <input type="text" id="description" placeholder="Description">
             <button type="submit">Add Expense</button>
         </form>
+
+        <form id="receiptForm">
+            <h2>Upload Receipt</h2>
+            <input type="file" id="receipt" name="receipt" accept="image/*" required>
+            <button type="submit">Upload Receipt</button>
+        </form>
+
+        <form id="shoppingCartForm">
+            <h2>Analyze Shopping Cart</h2>
+            <input type="file" id="shoppingCart" name="shopping_cart" accept="image/*" required>
+            <button type="submit">Analyze Shopping Cart</button>
+        </form>
+
         <div id="expenseList"></div>
+        <div id="receiptResult"></div>
+        <div id="shoppingCartResult"></div>
+        <div id="bargainingResult"></div>
     </div>
     <script>
         document.getElementById('expenseForm').addEventListener('submit', function(e) {
@@ -93,15 +111,118 @@
             });
         });
 
+        document.getElementById('receiptForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('/upload_receipt', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('receiptResult').innerHTML = `
+                        <div class="item">
+                            <h3>Receipt Processed</h3>
+                            <p>Amount: $${data.expense.amount}</p>
+                            <p>Date: ${data.expense.date}</p>
+                            <p>Merchant: ${data.expense.merchant}</p>
+                        </div>
+                    `;
+                    document.getElementById('receiptForm').reset();
+                    loadExpenses();
+                } else {
+                    alert('Error processing receipt: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error uploading receipt');
+            });
+        });
+
+        document.getElementById('shoppingCartForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('/upload_shopping_cart', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let itemsHtml = '<h3>Shopping Cart Items:</h3>';
+                    data.items.forEach(item => {
+                        itemsHtml += `<p>${item.name}: $${item.price.toFixed(2)}</p>`;
+                    });
+
+                    let suggestionsHtml = '<h3>Alternative Suggestions:</h3>';
+                    data.suggestions.forEach(suggestion => {
+                        suggestionsHtml += `
+                            <div>
+                                <p><strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})</p>
+                                <p>Alternative: ${suggestion.alternative_item} ($${suggestion.alternative_price.toFixed(2)})</p>
+                                <p>Potential Savings: $${(suggestion.original_price - suggestion.alternative_price).toFixed(2)}</p>
+                            </div>
+                        `;
+                    });
+
+                    let negotiationHtml = '<h3>Bargaining Team Results:</h3>';
+                    data.negotiation_results.forEach(result => {
+                        if (result.success) {
+                            negotiationHtml += `
+                                <div>
+                                    <p><strong>${result.item}</strong></p>
+                                    <p>Negotiator: ${result.negotiator}</p>
+                                    <p>Original Price: $${result.original_price.toFixed(2)}</p>
+                                    <p>New Price: $${result.new_price.toFixed(2)}</p>
+                                    <p>Savings: $${result.savings.toFixed(2)}</p>
+                                </div>
+                            `;
+                        } else {
+                            negotiationHtml += `
+                                <div>
+                                    <p><strong>${result.item}</strong></p>
+                                    <p>Negotiator: ${result.negotiator}</p>
+                                    <p>Negotiation unsuccessful</p>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    document.getElementById('shoppingCartResult').innerHTML = `
+                        <div class="item">
+                            ${itemsHtml}
+                            ${suggestionsHtml}
+                        </div>
+                    `;
+                    document.getElementById('bargainingResult').innerHTML = `
+                        <div class="item">
+                            ${negotiationHtml}
+                        </div>
+                    `;
+                    document.getElementById('shoppingCartForm').reset();
+                } else {
+                    alert('Error analyzing shopping cart: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error analyzing shopping cart');
+            });
+        });
+
         function loadExpenses() {
             fetch('/api/expenses')
             .then(response => response.json())
             .then(expenses => {
                 const expenseList = document.getElementById('expenseList');
-                expenseList.innerHTML = '';
+                expenseList.innerHTML = '<h2>Recent Expenses</h2>';
                 expenses.forEach(expense => {
                     const expenseItem = document.createElement('div');
-                    expenseItem.className = 'expense-item';
+                    expenseItem.className = 'item';
                     expenseItem.innerHTML = `
                         <strong>${expense.category}</strong>: $${expense.amount}
                         <br>${expense.description}
