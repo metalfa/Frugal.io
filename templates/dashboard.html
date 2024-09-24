@@ -19,6 +19,13 @@
             <button type="submit">Upload Receipt</button>
         </form>
     </div>
+    <div class="shopping-cart-upload">
+        <h2>Upload Shopping Cart Screenshot</h2>
+        <form id="shopping-cart-form" enctype="multipart/form-data">
+            <input type="file" id="shopping-cart" name="shopping_cart" accept="image/*" required>
+            <button type="submit">Analyze Shopping Cart</button>
+        </form>
+    </div>
     <div class="expense-list">
         <h2>Recent Expenses</h2>
         <ul id="expenses">
@@ -40,6 +47,11 @@
     <div class="suggestions">
         <h2>Suggestions</h2>
         <ul id="product-suggestions"></ul>
+    </div>
+    <div class="shopping-cart-analysis">
+        <h2>Shopping Cart Analysis</h2>
+        <div id="shopping-cart-items"></div>
+        <div id="shopping-cart-suggestions"></div>
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>

@@ -5,6 +5,7 @@ from models import Expense
 from price_comparison import compare_prices
 from product_suggestions import get_suggestions
 from receipt_scanner import scan_receipt
+from shopping_cart_analyzer import analyze_shopping_cart, suggest_alternatives
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
@@ -101,3 +102,44 @@ def upload_receipt():
             return jsonify({"success": False, "message": f"Error processing receipt: {str(e)}"}), 500
     
     return jsonify({"success": False, "message": "Failed to process receipt"}), 500
+
+@expense_bp.route("/upload_shopping_cart", methods=['POST'])
+@login_required
+def upload_shopping_cart():
+    if 'shopping_cart' not in request.files:
+        return jsonify({"success": False, "message": "No file part"}), 400
+    
+    file = request.files['shopping_cart']
+    if file.filename == '':
+        return jsonify({"success": False, "message": "No selected file"}), 400
+    
+    if file:
+        try:
+            filename = secure_filename(file.filename)
+            upload_folder = os.path.join(current_app.root_path, 'uploads')
+            os.makedirs(upload_folder, exist_ok=True)
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+            
+            # Analyze the shopping cart
+            items = analyze_shopping_cart(file_path)
+            
+            if items is None or len(items) == 0:
+                return jsonify({"success": False, "message": "Failed to analyze shopping cart"}), 500
+            
+            # Generate alternative suggestions
+            suggestions = suggest_alternatives(items)
+            
+            # Remove the uploaded file after processing
+            os.remove(file_path)
+            
+            return jsonify({
+                "success": True,
+                "message": "Shopping cart analyzed successfully",
+                "items": items,
+                "suggestions": suggestions
+            })
+        except Exception as e:
+            return jsonify({"success": False, "message": f"Error analyzing shopping cart: {str(e)}"}), 500
+    
+    return jsonify({"success": False, "message": "Failed to analyze shopping cart"}), 500

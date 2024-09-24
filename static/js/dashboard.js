@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     const expenseForm = document.getElementById('expense-form');
     const receiptForm = document.getElementById('receipt-form');
+    const shoppingCartForm = document.getElementById('shopping-cart-form');
     const expensesList = document.getElementById('expenses');
     const totalSpentElement = document.getElementById('total-spent');
     const categoryBreakdownElement = document.getElementById('category-breakdown');
     const productSuggestionsElement = document.getElementById('product-suggestions');
+    const shoppingCartItemsElement = document.getElementById('shopping-cart-items');
+    const shoppingCartSuggestionsElement = document.getElementById('shopping-cart-suggestions');
 
     expenseForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -55,6 +58,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    shoppingCartForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(shoppingCartForm);
+
+        fetch('/upload_shopping_cart', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Shopping cart analyzed successfully');
+                shoppingCartForm.reset();
+                displayShoppingCartAnalysis(data.items, data.suggestions);
+            } else {
+                alert('Error analyzing shopping cart: ' + data.message);
+            }
+        });
+    });
+
     function updateExpenses() {
         fetch('/dashboard')
             .then(response => response.text())
@@ -92,6 +115,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 suggestionsHtml += '</ul>';
                 productSuggestionsElement.innerHTML = suggestionsHtml;
             });
+    }
+
+    function displayShoppingCartAnalysis(items, suggestions) {
+        let itemsHtml = '<h3>Shopping Cart Items:</h3><ul>';
+        items.forEach(item => {
+            itemsHtml += `<li>${item.name}: $${item.price.toFixed(2)}</li>`;
+        });
+        itemsHtml += '</ul>';
+        shoppingCartItemsElement.innerHTML = itemsHtml;
+
+        let suggestionsHtml = '<h3>Alternative Suggestions:</h3><ul>';
+        suggestions.forEach(suggestion => {
+            suggestionsHtml += `<li>
+                <strong>${suggestion.original_item}</strong> ($${suggestion.original_price.toFixed(2)})
+                <br>Alternative: ${suggestion.alternative_item} ($${suggestion.alternative_price.toFixed(2)})
+                <br>Potential Savings: $${(suggestion.original_price - suggestion.alternative_price).toFixed(2)}
+            </li>`;
+        });
+        suggestionsHtml += '</ul>';
+        shoppingCartSuggestionsElement.innerHTML = suggestionsHtml;
     }
 
     // Initial updates
