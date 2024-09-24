@@ -19,7 +19,7 @@ def analyze_shopping_cart(image_path):
         # Use pytesseract to extract text from the image
         logger.debug("Extracting text from image using pytesseract")
         text = pytesseract.image_to_string(image)
-        logger.debug(f"Extracted text: {text}")
+        logger.debug(f"Extracted text from image:\n{text}")
         
         # Process the extracted text to identify items and prices
         items = extract_items(text)
@@ -41,16 +41,19 @@ def extract_items(text):
             logger.debug(f"Skipping empty line")
             continue
         
+        # Skip lines containing "subtotal", "total", or "items"
+        if any(keyword in line.lower() for keyword in ["subtotal", "total", "items"]):
+            logger.debug(f"Skipping line containing subtotal/total/items: {line}")
+            continue
+        
         # Use regex to find item name and price
-        match = re.search(r'(.+?)\s+\$?(\d+\.\d{2})', line)
+        match = re.search(r'(.+?)\s+\$?(\d+\.\d{2})(?:\s+|$)', line)
         if match:
             item_name = match.group(1).strip()
             price = float(match.group(2))
             
-            # Skip the subtotal line
-            if "subtotal" not in item_name.lower():
-                items.append({"name": item_name, "price": price})
-                logger.debug(f"Matched item: {item_name}, price: ${price:.2f}")
+            items.append({"name": item_name, "price": price})
+            logger.debug(f"Matched item: {item_name}, price: ${price:.2f}")
         else:
             logger.debug(f"No match found for line: {line}")
     
