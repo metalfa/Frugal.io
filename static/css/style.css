@@ -3,6 +3,10 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
+    padding-bottom: 60px; /* Add padding at the bottom */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
@@ -28,6 +32,7 @@ nav ul li a {
 
 main {
     padding: 2rem;
+    flex-grow: 1; /* Allow main content to grow and push footer down */
 }
 
 .alert {
@@ -102,13 +107,12 @@ main {
 }
 
 footer {
+    position: relative;
+    width: 100%;
+    padding: 1rem;
     background-color: #333;
     color: #fff;
     text-align: center;
-    padding: 1rem;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
 }
 
 button {
