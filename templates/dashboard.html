@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <div class="expense-form">
+        <h2>Add New Expense</h2>
+        <form id="expense-form">
+            <input type="number" id="amount" placeholder="Amount" required>
+            <input type="text" id="category" placeholder="Category" required>
+            <input type="text" id="description" placeholder="Description">
+            <button type="submit">Add Expense</button>
+        </form>
+    </div>
+    <div class="expense-list">
+        <h2>Recent Expenses</h2>
+        <ul id="expenses">
+            {% for expense in expenses %}
+            <li>
+                <span class="amount">${{ expense.amount }}</span>
+                <span class="category">{{ expense.category }}</span>
+                <span class="description">{{ expense.description }}</span>
+                <span class="date">{{ expense.date.strftime('%Y-%m-%d') }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="analysis">
+        <h2>Expense Analysis</h2>
+        <div id="total-spent"></div>
+        <div id="category-breakdown"></div>
+    </div>
+    <div class="suggestions">
+        <h2>Suggestions</h2>
+        <ul id="product-suggestions"></ul>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock content %}
